@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMS History & Trends — Battery Health</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#020812;--card:#081428;--border:#0d2545;
+    --cyan:#00f5ff;--green:#39ff14;--amber:#ffb700;--red:#ff2d55;
+    --blue:#1e90ff;--purple:#bf5fff;--dim:#5a8ab0;--text:#e0f4ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+  .page{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:24px 20px 48px;}
+  header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:26px;}
+  .brand-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.45rem;color:var(--cyan);}
+  .nav-btn{background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.25);color:var(--cyan);padding:6px 16px;border-radius:8px;text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:.7rem;}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:16px;margin-bottom:26px;}
+  .chart-panel{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px;}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  th, td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-family:'Share Tech Mono',monospace;}
+  .tag-good{color:var(--green);}
+  .tag-warn{color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="brand-title">📊 BMS HISTORY & TRENDS</div>
+    <a href="index.html" class="nav-btn">⚡ Live Dashboard</a>
+  </header>
+  <div class="chart-grid">
+    <div class="chart-panel"><canvas id="ch-soh"></canvas></div>
+    <div class="chart-panel"><canvas id="ch-temp"></canvas></div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:13px;overflow-x:auto;">
+    <table>
+      <thead><tr><th>Timestamp</th><th>Voltage (V)</th><th>Temp (°C)</th><th>Battery %</th><th>SOH %</th></tr></thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
+  </div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCce3wBhSs9byWSgK25WLU8fx0JdXlm1dE",
+  authDomain: "battery-health-6991b.firebaseapp.com",
+  projectId: "battery-health-6991b",
+  storageBucket: "battery-health-6991b.firebasestorage.app",
+  messagingSenderId: "171776546554",
+  appId: "1:171776546554:web:2a3e444f7dbd522c54db43"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadData() {
+  const q = query(collection(db, "bms_readings"), orderBy('timestamp','asc'));
+  const snap = await getDocs(q);
+  const docs = snap.docs.map(d => d.data());
+  document.getElementById('tbl-body').innerHTML = docs.reverse().map(d => `<tr>
+    <td>${new Date(d.timestamp).toLocaleString()}</td>
+    <td>${d.voltage?.toFixed(2)}</td>
+    <td>${d.temperature?.toFixed(1)}</td>
+    <td>${d.batteryPercent?.toFixed(1)}</td>
+    <td class="${d.soh >= 85 ? 'tag-good' : 'tag-warn'}">${d.soh?.toFixed(1)}%</td>
+  </tr>`).join('');
+}
+loadData();
+</script>
+</body>
+</html>
