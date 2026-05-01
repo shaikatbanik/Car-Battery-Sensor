@@ -1,0 +1,84 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+}
+
+.container {
+    padding: 30px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 25px;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #cbd5f5;
+}
+
+.value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.status {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+/* SOH Progress Bar */
+.progress-bar {
+    margin-top: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background: #334155;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #22c55e;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+/* Alerts */
+.alert {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 10px;
+    display: none;
+    font-weight: bold;
+}
+
+.warning { background: #facc15; color: black; }
+.danger { background: #ef4444; }
+.good { background: #22c55e; }
